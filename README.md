@@ -44,11 +44,9 @@ p cnf 3 2
 ```
 
 In the example above, there are 3 variables $p_1, p_2, p_3$ and 2 clauses $(p_1 \lor \lnot p_2) \land (p_2 \lor p_3 \lor \lnot p_1)$. The problem can be written in a more compact form as:
-$$
-\begin{align}
+$
 (p_1 \lor \lnot p_2) \land (p_2 \lor p_3 \lor \lnot p_1)
-\end{align}
-$$
+$
 
 The problem is to find a truth assignment to the variables such that all the clauses are satisfied. For example, the following assignment satisfies the clauses:
 $
