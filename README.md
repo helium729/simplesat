@@ -52,11 +52,9 @@ $$
 
 The problem is to find a truth assignment to the variables such that all the clauses are satisfied. For example, the following assignment satisfies the clauses:
 $$
-\begin{align}
 p_1 &= true \\
 p_2 &= true \\
 p_3 &= true
-\end{align}
 $$
 
 ## Output format
@@ -67,11 +65,9 @@ SAT
 ```
 which means the problem is satisfiable and the following assignment satisfies the clauses:
 $$
-\begin{align}
 p_1 &= true \\
 p_2 &= true \\
 p_3 &= false
-\end{align}
 $$
 if the problem is not satisfiable, the output is:
 ```
