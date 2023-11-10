@@ -43,8 +43,7 @@ p cnf 3 2
 2 3 -1 0
 ```
 
-In the example above, there are 3 variables $p_1, p_2, p_3$ and 2 clauses $(p_1 \lor \lnot p_2) \land (p_2 \lor p_3 \lor \lnot p_1)$. The problem can be written in a more compact form as:
-$ (p_1 \lor \lnot p_2) \land (p_2 \lor p_3 \lor \lnot p_1) $
+In the example above, there are 3 variables $p_1, p_2, p_3$ and 2 clauses $(p_1 \lor \lnot p_2) \land (p_2 \lor p_3 \lor \lnot p_1)$. The problem can be written in a more compact form as: $ (p_1 \lor \lnot p_2) \land (p_2 \lor p_3 \lor \lnot p_1) $
 
 The problem is to find a truth assignment to the variables such that all the clauses are satisfied. For example, the following assignment satisfies the clauses:
 $p_1 = true, p_2 = true, p_3 = true$
@@ -55,8 +54,8 @@ The output first gives if the problem is satisfiable or not. If the problem is s
 SAT
 1 2 -3
 ```
-which means the problem is satisfiable and the following assignment satisfies the clauses:
-$ p_1 = true, p_2 = true, p_3 = false$
+which means the problem is satisfiable and the following assignment satisfies the clauses:$ p_1 = true, p_2 = true, p_3 = false$
+
 if the problem is not satisfiable, the output is:
 ```
 UNSAT
