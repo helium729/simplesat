@@ -11,9 +11,9 @@ simplesat::clause::~clause()
 int simplesat::clause::val()
 {
     bool not_sure = false;
-    // if clause is empty, return -1
+    // if clause is empty, return 1
     if (literal_pointers.empty())
-        return -1;
+        return 1;
     // iterate through literals
     for (auto it = literal_pointers.begin(); it != literal_pointers.end(); ++it) {
         // if literal is assigned true, return 1

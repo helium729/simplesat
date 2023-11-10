@@ -9,11 +9,20 @@ int main()
 {
     size_t n, m;
     std::string line;
+    std::string p;
+    std::string cnf;
     // get line from stdin
-    std::getline(std::cin, line);
+    do {
+        std::getline(std::cin, line);
+    } while (line.empty() || line[0] == 'c');
     // parse line
     std::istringstream iss(line);
-    iss >> n >> m;
+    iss >> p >> cnf >> n >> m;
+    // check magic number
+    if (p != "p" || cnf != "cnf") {
+        std::cout << "Invalid input" << std::endl;
+        return 1;
+    }
     simplesat::literal* literals = new simplesat::literal[n];
     std::list<simplesat::clause>* clauses = new std::list<simplesat::clause>();
     // read in clauses
@@ -22,14 +31,19 @@ int main()
         std::string line;
         simplesat::clause c;
         std::getline(std::cin, line);
+        if (line.empty())
+        {
+            i--;
+            continue;
+        }
         // parse line
         std::istringstream iss(line);
-        int lit;
+        long long int lit;
         while (iss >> lit) {
             if (lit > 0) {
                 c.add_literal(literals + lit - 1, false);
             }
-            else {
+            else if (lit < 0) {
                 lit = 0 - lit;
                 c.add_literal(literals + lit - 1, true);
             }
@@ -40,7 +54,7 @@ int main()
     bool result = s.solve();
     if (result)
     {
-        std::cout << "sat" << std::endl;
+        std::cout << "SAT" << std::endl;
         auto model = s.get_model();
         for (auto it = model.begin(); it != model.end(); ++it) {
             if (it->second)
@@ -48,10 +62,9 @@ int main()
             else
                 std::cout << "-" << it->first << " ";
         }
-        std::cout << std::endl;
+        std::cout << "0" << std::endl;
     }
     else
-        std::cout << "unsat" << std::endl;
-
+        std::cout << "UNSAT" << std::endl;
     return 0;
 }

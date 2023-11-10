@@ -22,9 +22,9 @@ bool simplesat::solver::solve()
     while (true)
     {
         size_t eliminated = eliminate_unit_clauses();
+        check_clauses();
         if (eliminated > 0)
             continue;
-        check_clauses();
         int result = get_current_result();
         if (result == 1)
         {
@@ -75,13 +75,12 @@ bool simplesat::solver::solve()
 std::vector<std::pair<size_t, bool>> simplesat::solver::get_model()
 {
     std::vector<std::pair<size_t, bool>> model;
-    for (auto it = decision_stack.begin(); it != decision_stack.end(); it++) {
-        model.push_back(std::make_pair(it->first - literals + 1, (it->second & 0x01) == 1));
+    for (size_t i = 0; i < num_literals; i++) {
+        if (literals[i].is_assigned())
+            model.push_back(std::make_pair(i + 1, literals[i].get_value()));
+        else
+            model.push_back(std::make_pair(i + 1, false));
     }
-    // sort model
-    std::sort(model.begin(), model.end(), [](std::pair<size_t, bool> a, std::pair<size_t, bool> b) {
-        return a.first < b.first;
-    });
     return model;
 }
 
@@ -89,6 +88,9 @@ size_t simplesat::solver::eliminate_unit_clauses()
 {
     size_t count = 0;
     for (auto it = clauses.begin(); it != clauses.end(); it++) {
+        // skip if already satisfied
+        if (it->second == 1)
+            continue;
         auto single = it->first->get_single_unknown_literal();
         if (single.first == nullptr)
             continue;

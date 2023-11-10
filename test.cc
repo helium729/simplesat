@@ -36,7 +36,7 @@ TEST(LiteralTest, AssignedLiteralValue)
 TEST(ClauseTest, EmptyClause)
 {
     simplesat::clause c;
-    ASSERT_EQ(c.val(), -1);
+    ASSERT_EQ(c.val(), 1);
 }
 
 TEST(ClauseTest, SatisfiedClause)
