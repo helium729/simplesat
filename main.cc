@@ -2,18 +2,51 @@
 #include <iostream>
 #include <sstream>
 #include <list>
+#include <fstream>
 
 #include "solver.h"
 
-int main()
+int main(int argc, char** argv)
 {
     size_t n, m;
     std::string line;
     std::string p;
     std::string cnf;
+    std::istream* fs;
+    std::ostream* os;
+    if (argc > 1)
+    {
+        try {
+            fs = new std::ifstream(argv[1]);
+        }
+        catch (std::exception e)
+        {
+            std::cout << "Invalid input file" << std::endl;
+            return 1;
+        }
+    }
+    else
+    {
+        fs = &std::cin;
+    }
+    if (argc > 2)
+    {
+        try {
+            os = new std::ofstream(argv[2]);
+        }
+        catch (std::exception e)
+        {
+            std::cout << "Invalid output file" << std::endl;
+            return 1;
+        }
+    }
+    else
+    {
+        os = &std::cout;
+    }
     // get line from stdin
     do {
-        std::getline(std::cin, line);
+        std::getline(*fs, line);
     } while (line.empty() || line[0] == 'c');
     // parse line
     std::istringstream iss(line);
@@ -30,7 +63,7 @@ int main()
         // get line from stdin
         std::string line;
         simplesat::clause c;
-        std::getline(std::cin, line);
+        std::getline(*fs, line);
         if (line.empty())
         {
             i--;
@@ -54,17 +87,17 @@ int main()
     bool result = s.solve();
     if (result)
     {
-        std::cout << "SAT" << std::endl;
+        *os << "SAT" << std::endl;
         auto model = s.get_model();
         for (auto it = model.begin(); it != model.end(); ++it) {
             if (it->second)
-                std::cout << it->first << " ";
+                *os << it->first << " ";
             else
-                std::cout << "-" << it->first << " ";
+                *os << "-" << it->first << " ";
         }
-        std::cout << "0" << std::endl;
+        *os << "0" << std::endl;
     }
     else
-        std::cout << "UNSAT" << std::endl;
+        *os << "UNSAT" << std::endl;
     return 0;
 }
