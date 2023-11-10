@@ -27,7 +27,10 @@ bool simplesat::solver::solve()
         check_clauses();
         int result = get_current_result();
         if (result == 1)
+        {
+            solved = true;
             return true;
+        }
         else if (result == -1)
         {
             if (decision_stack.back().second != 2)
@@ -69,6 +72,19 @@ bool simplesat::solver::solve()
     return false;
 }
 
+std::vector<std::pair<size_t, bool>> simplesat::solver::get_model()
+{
+    std::vector<std::pair<size_t, bool>> model;
+    for (auto it = decision_stack.begin(); it != decision_stack.end(); it++) {
+        model.push_back(std::make_pair(it->first - literals + 1, (it->second & 0x01) == 1));
+    }
+    // sort model
+    std::sort(model.begin(), model.end(), [](std::pair<size_t, bool> a, std::pair<size_t, bool> b) {
+        return a.first < b.first;
+    });
+    return model;
+}
+
 size_t simplesat::solver::eliminate_unit_clauses()
 {
     size_t count = 0;
@@ -77,8 +93,9 @@ size_t simplesat::solver::eliminate_unit_clauses()
         if (single.first == nullptr)
             continue;
         single.first->assign(!single.second);
+        count++;
         // unit elimination is always strong
-        decision_stack.push_back(std::make_pair(single.first, single.second ? 0 : 1));        
+        decision_stack.push_back(std::make_pair(single.first, single.second ? 0 : 1));
         // remove from unknown_literals
         for (auto it2 = unknown_literals.begin(); it2 != unknown_literals.end(); it2++) {
             if (*it2 == single.first - literals) {

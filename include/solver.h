@@ -5,6 +5,7 @@
 #include "literal.h"
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 namespace simplesat
 {
@@ -15,6 +16,7 @@ namespace simplesat
         virtual ~solver();
 
         bool solve();
+        std::vector<std::pair<size_t, bool>> get_model();
     private:
         literal* literals;
         std::list<size_t> unknown_literals;

@@ -39,7 +39,17 @@ int main()
     simplesat::solver s(clauses, literals, n);
     bool result = s.solve();
     if (result)
+    {
         std::cout << "sat" << std::endl;
+        auto model = s.get_model();
+        for (auto it = model.begin(); it != model.end(); ++it) {
+            if (it->second)
+                std::cout << it->first << " ";
+            else
+                std::cout << "-" << it->first << " ";
+        }
+        std::cout << std::endl;
+    }
     else
         std::cout << "unsat" << std::endl;
 
