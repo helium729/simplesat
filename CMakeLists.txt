@@ -12,6 +12,7 @@ include_directories(include)
 link_directories(lib)
 
 # find gtest library
+# remove the following line if you don't want to use gtest
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 link_directories(${GTEST_LIBRARY_DIRS})
