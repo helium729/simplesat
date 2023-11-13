@@ -83,21 +83,29 @@ int main(int argc, char** argv)
         }
         clauses->push_back(c);
     }
-    simplesat::solver s(clauses, literals, n);
-    bool result = s.solve();
-    if (result)
-    {
-        *os << "SAT" << std::endl;
-        auto model = s.get_model();
-        for (auto it = model.begin(); it != model.end(); ++it) {
-            if (it->second)
-                *os << it->first << " ";
-            else
-                *os << "-" << it->first << " ";
+    try {
+        simplesat::solver s(clauses, literals, n);
+        bool result = s.solve();
+        if (result)
+        {
+            *os << "SAT" << std::endl;
+            auto model = s.get_model();
+            for (auto it = model.begin(); it != model.end(); ++it) {
+                if (it->second)
+                    *os << it->first << " ";
+                else
+                    *os << "-" << it->first << " ";
+            }
+            *os << "0" << std::endl;
         }
-        *os << "0" << std::endl;
+        else
+            *os << "UNSAT" << std::endl;
+        return 0;
     }
-    else
-        *os << "UNSAT" << std::endl;
-    return 0;
+    catch (std::string e)
+    {
+        std::cout << e << std::endl;
+        return 1;
+    }
+    
 }

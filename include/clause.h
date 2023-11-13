@@ -47,6 +47,8 @@ namespace simplesat
         void clear_cache();
         bool get_negated(literal*);
 
+        size_t valid_length;
+
     private:
         std::map<literal*,bool> literal_pointers;   
         bool cache;

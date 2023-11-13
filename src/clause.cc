@@ -2,6 +2,8 @@
 
 simplesat::clause::clause()
 {
+    valid_length = 0;
+    clear_cache();
 }
 
 simplesat::clause::~clause()
@@ -41,10 +43,14 @@ void simplesat::clause::add_literal(literal* lit, bool negated, int id)
     literal_pointers[lit] = negated;
     if (id >= 0)
         lit->clause_ids.push_back(id);
+    valid_length++;
 }
 
 std::pair<simplesat::literal*,bool> simplesat::clause::get_single_unknown_literal()
 {
+    if (valid_length > 1 || valid_length == 0){
+        return std::make_pair(nullptr, false);
+    }
     size_t count = 0;
     simplesat::literal* unknown_literal;
     bool negated = false;

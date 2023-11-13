@@ -33,6 +33,8 @@ bool simplesat::literal::is_assigned()
 
 void simplesat::literal::assign(bool value)
 {
+    if (state != -1)
+        throw std::string("literal already assigned");
     if (value)
         state = 1;
     else

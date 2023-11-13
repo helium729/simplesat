@@ -54,29 +54,25 @@ bool simplesat::solver::solve()
                     {
                         auto x = *it;
                         clauses[x].first->clear_cache();
+                        clauses[x].first->valid_length++;
                     }
                     insert_unknown_literal(decision_stack.back().first - literals);
                     decision_stack.pop_back();
+                    if (decision_stack.empty())
+                        return false;
                 }
-                // flip last weak decision to weak true
-                decision_stack.back().first->assign(true);
-                auto clist = decision_stack.back().first->clause_ids;
-                for (auto it = clist.begin(); it != clist.end(); it++)
-                {
-                    auto x = *it;
-                    // get negated value
-                    bool negated = clauses[x].first->get_negated(decision_stack.back().first);
-                    // if not negated, set cache to true
-                    if (!negated)
-                    {
-                        clauses[x].first->cache_true();
-                    }
-                }
-                decision_stack.back().second = 3;
             }
             // flip last weak decision to weak true
-            decision_stack.back().first->assign(true);
+            decision_stack.back().first->unassign();
             auto clist = decision_stack.back().first->clause_ids;
+            for (auto it = clist.begin(); it != clist.end(); it++)
+            {
+                auto x = *it;
+                clauses[x].first->clear_cache();
+                clauses[x].first->valid_length++;
+            }
+            decision_stack.back().first->assign(true);
+            clist = decision_stack.back().first->clause_ids;
             for (auto it = clist.begin(); it != clist.end(); it++)
             {
                 auto x = *it;
@@ -87,6 +83,7 @@ bool simplesat::solver::solve()
                 {
                     clauses[x].first->cache_true();
                 }
+                clauses[x].first->valid_length--;
             }
             decision_stack.back().second = 3;
         }
@@ -96,7 +93,7 @@ bool simplesat::solver::solve()
             size_t index = unknown_literals.front();
             unknown_literals.pop_front();
             literals[index].assign(false);
-            auto clist = literals->clause_ids;
+            auto clist = literals[index].clause_ids;
             for (auto it = clist.begin(); it != clist.end(); it++)
             {
                 auto x = *it;
@@ -105,6 +102,7 @@ bool simplesat::solver::solve()
                 {
                     clauses[x].first->cache_true();
                 }
+                clauses[x].first->valid_length--;
             }
             decision_stack.push_back(std::make_pair(literals + index, 2));
         }
@@ -131,16 +129,20 @@ size_t simplesat::solver::eliminate_unit_clauses()
         // skip if already satisfied
         if (it->second == 1)
             continue;
+        // skip if not unit
+        if (it->first->valid_length > 1)
+            continue;
         auto single = it->first->get_single_unknown_literal();
         if (single.first == nullptr)
             continue;
         single.first->assign(!single.second);
         auto clist = single.first->clause_ids;
-        for (auto it = clist.begin(); it != clist.end(); it++)
+        for (auto iti = clist.begin(); iti != clist.end(); iti++)
         {
-            auto x = *it;
+            auto x = *iti;
             if (!(single.second ^ clauses[x].first->get_negated(single.first))) 
                 clauses[x].first->cache_true();
+            clauses[x].first->valid_length--;
         }
         count++;
         // unit elimination is always strong
