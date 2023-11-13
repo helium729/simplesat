@@ -10,6 +10,8 @@ simplesat::clause::~clause()
 
 int simplesat::clause::val()
 {
+    if (cache)
+        return 1;
     bool not_sure = false;
     // if clause is empty, return 1
     if (literal_pointers.empty())
@@ -34,9 +36,11 @@ int simplesat::clause::val()
         return -1;
 }
 
-void simplesat::clause::add_literal(literal* lit, bool negated)
+void simplesat::clause::add_literal(literal* lit, bool negated, int id)
 {
-    literal_pointers.push_back(std::make_pair(lit, negated));
+    literal_pointers[lit] = negated;
+    if (id >= 0)
+        lit->clause_ids.push_back(id);
 }
 
 std::pair<simplesat::literal*,bool> simplesat::clause::get_single_unknown_literal()
@@ -56,4 +60,22 @@ std::pair<simplesat::literal*,bool> simplesat::clause::get_single_unknown_litera
         return std::make_pair(unknown_literal, negated);
     else
         return std::make_pair(nullptr, false);
+}
+
+void simplesat::clause::cache_true()
+{
+    cache = true;
+}
+
+void simplesat::clause::clear_cache()
+{
+    cache = false;
+}
+
+bool simplesat::clause::get_negated(simplesat::literal* lit)
+{
+    // check if lit exists
+    if (literal_pointers.find(lit) == literal_pointers.end())
+        throw std::string("literal does not exist in clause");
+    return literal_pointers[lit];    
 }

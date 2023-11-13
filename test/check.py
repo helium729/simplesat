@@ -2,7 +2,7 @@ import os
 
 def check(lines, cnflines):
     if lines[0] == 'UNSAT':
-        return 'PASS'
+        return 'UNSAT'
     else:
         line = lines[1].split()
         # remove the first line of cnflines

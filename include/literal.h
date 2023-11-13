@@ -3,6 +3,7 @@
 
 #include <string>
 #include <exception>
+#include <vector>
 
 namespace simplesat
 {
@@ -61,8 +62,11 @@ namespace simplesat
          * @return false The literal is unassigned.
          */
         bool is_assigned();
+        std::vector<size_t> clause_ids;
+
     private:
         int state; // 0 = false, 1 = true, -1 = unassigned
+        
     };  
     
 } // namespace simplesat

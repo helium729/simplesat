@@ -4,6 +4,7 @@
 #include <list>
 #include <utility>
 #include "literal.h"
+#include <map>
 
 namespace simplesat
 {
@@ -32,8 +33,9 @@ namespace simplesat
          * Adds a literal to the clause.
          * @param lit The literal to add.
          * @param negated Whether the literal is negated.
+         * @param id Id to this clause, use -1 to disable
          */
-        void add_literal(literal* lit, bool negated = false);
+        void add_literal(literal* lit, bool negated = false, int id = -1);
 
         /**
          * Returns a single unknown literal in the clause, if one exists.
@@ -41,8 +43,13 @@ namespace simplesat
          */
         std::pair<literal*, bool> get_single_unknown_literal();
 
+        void cache_true();
+        void clear_cache();
+        bool get_negated(literal*);
+
     private:
-        std::list<std::pair<literal*,bool>> literal_pointers;   
+        std::map<literal*,bool> literal_pointers;   
+        bool cache;
     };
 } // namespace simplesat
 

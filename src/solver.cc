@@ -49,15 +49,45 @@ bool simplesat::solver::solve()
                 // backtrack
                 while (decision_stack.back().second != 2) {
                     decision_stack.back().first->unassign();
+                    auto clist = decision_stack.back().first->clause_ids;
+                    for (auto it = clist.begin(); it != clist.end(); it++)
+                    {
+                        auto x = *it;
+                        clauses[x].first->clear_cache();
+                    }
                     insert_unknown_literal(decision_stack.back().first - literals);
                     decision_stack.pop_back();
                 }
                 // flip last weak decision to weak true
                 decision_stack.back().first->assign(true);
+                auto clist = decision_stack.back().first->clause_ids;
+                for (auto it = clist.begin(); it != clist.end(); it++)
+                {
+                    auto x = *it;
+                    // get negated value
+                    bool negated = clauses[x].first->get_negated(decision_stack.back().first);
+                    // if not negated, set cache to true
+                    if (!negated)
+                    {
+                        clauses[x].first->cache_true();
+                    }
+                }
                 decision_stack.back().second = 3;
             }
             // flip last weak decision to weak true
             decision_stack.back().first->assign(true);
+            auto clist = decision_stack.back().first->clause_ids;
+            for (auto it = clist.begin(); it != clist.end(); it++)
+            {
+                auto x = *it;
+                // get negated value
+                bool negated = clauses[x].first->get_negated(decision_stack.back().first);
+                // if not negated, set cache to true
+                if (!negated)
+                {
+                    clauses[x].first->cache_true();
+                }
+            }
             decision_stack.back().second = 3;
         }
         else
@@ -66,6 +96,16 @@ bool simplesat::solver::solve()
             size_t index = unknown_literals.front();
             unknown_literals.pop_front();
             literals[index].assign(false);
+            auto clist = literals->clause_ids;
+            for (auto it = clist.begin(); it != clist.end(); it++)
+            {
+                auto x = *it;
+                bool negated = clauses[x].first->get_negated(literals + index);
+                if (negated)
+                {
+                    clauses[x].first->cache_true();
+                }
+            }
             decision_stack.push_back(std::make_pair(literals + index, 2));
         }
     }
@@ -95,6 +135,13 @@ size_t simplesat::solver::eliminate_unit_clauses()
         if (single.first == nullptr)
             continue;
         single.first->assign(!single.second);
+        auto clist = single.first->clause_ids;
+        for (auto it = clist.begin(); it != clist.end(); it++)
+        {
+            auto x = *it;
+            if (!(single.second ^ clauses[x].first->get_negated(single.first))) 
+                clauses[x].first->cache_true();
+        }
         count++;
         // unit elimination is always strong
         decision_stack.push_back(std::make_pair(single.first, single.second ? 0 : 1));

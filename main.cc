@@ -74,11 +74,11 @@ int main(int argc, char** argv)
         long long int lit;
         while (iss >> lit) {
             if (lit > 0) {
-                c.add_literal(literals + lit - 1, false);
+                c.add_literal(literals + lit - 1, false, i);
             }
             else if (lit < 0) {
                 lit = 0 - lit;
-                c.add_literal(literals + lit - 1, true);
+                c.add_literal(literals + lit - 1, true, i);
             }
         }
         clauses->push_back(c);
